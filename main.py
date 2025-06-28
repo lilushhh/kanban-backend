@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from models.project import Project
-from models.task import Task
-from repositories.projectRepository import (
+from models.domain.types.project import Project
+from models.domain.types.task import Task
+from repositories.types_repositories.project_repository import (
     get_all_projects, get_project_by_id, add_project, delete_project, rename_project
 )
-from repositories.taskRepository import (
+from repositories.types_repositories.task_repository import (
     get_all_tasks, get_task_by_id,
     add_task, delete_task,
     update_task_status

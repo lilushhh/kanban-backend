@@ -1,5 +1,5 @@
 from typing import List
-from models.BaseObject import BaseObject
+from models.domain.base_object import BaseObject
 
 class Project(BaseObject):
     name: str
