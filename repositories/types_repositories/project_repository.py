@@ -57,3 +57,7 @@ class ProjectRepository(BaseRepositoryInterface[Project]):
                     json.dump([pr.dict() for pr in projects], f, indent=4)
                 return projects[i]
         raise HTTPException(status_code=404, detail="Project not found")
+    
+    def get_by_id(self, item_id):
+        projects = self.get_all()
+        return next((project for project in projects if project.id == item_id), None)
