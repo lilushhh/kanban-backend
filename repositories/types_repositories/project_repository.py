@@ -3,6 +3,7 @@ from pathlib import Path
 from uuid import UUID, uuid4
 from typing import List, Optional
 from fastapi import HTTPException
+from models.enums.object_type import ObjectType
 from models.domain.types.project import Project
 from repositories.base_repository import BaseRepositoryInterface
 
@@ -21,9 +22,6 @@ class ProjectRepository(BaseRepositoryInterface[Project]):
 
         if any(p.name == project.name for p in projects_list):
             raise HTTPException(status_code=400, detail="Project name already exists")
-
-        project.id = uuid4()
-        project.type = "project"
 
         projects_list.append(project)
 
@@ -58,6 +56,6 @@ class ProjectRepository(BaseRepositoryInterface[Project]):
                 return projects[i]
         raise HTTPException(status_code=404, detail="Project not found")
     
-    def get_by_id(self, item_id):
+    def get_by_id(self, item_id: UUID):
         projects = self.get_all()
         return next((project for project in projects if project.id == item_id), None)

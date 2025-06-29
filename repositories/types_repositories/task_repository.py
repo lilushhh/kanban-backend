@@ -2,6 +2,7 @@ import json
 from uuid import UUID, uuid4
 from fastapi import HTTPException
 from typing import List, Optional
+from models.enums.object_type import ObjectType
 from models.domain.types.task import Task
 from helpers.utils import get_task_path
 from repositories.types_repositories.project_repository import get_by_id
@@ -23,8 +24,7 @@ class TaskRepository(BaseRepositoryInterface[Task]):
             raise HTTPException(status_code=400, detail=f"Invalid users: {', '.join(invalid_users)}")
 
         task_list = self.get_all(project_id)
-        item.id = uuid4()
-        item.type = "task"
+
         task_list.append(item)
         with open(self.get_task_path(project_id), "w", encoding="utf-8") as f:
             json.dump([t.dict() for t in task_list], f, indent=4)
