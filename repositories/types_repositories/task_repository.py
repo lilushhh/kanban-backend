@@ -13,7 +13,7 @@ from repositories.base_repository import BaseRepositoryInterface
 task_json_path = Path("data/tasksProjects.json")
 
 class TaskRepository(BaseRepositoryInterface[Task]):
-    def get_all(self, tasks_get: TasksGetRequest) -> List[Task]:
+    def get_all(self) -> List[Task]:
         if not task_json_path.exists():
             return []
         with open(task_json_path, "r", encoding="utf-8") as tasks_json:
@@ -21,26 +21,26 @@ class TaskRepository(BaseRepositoryInterface[Task]):
         return [Task(**item) for item in data]
 
     
-    def add_item(self, item: CreateTaskRequest) -> Task:
-        project = get_by_id(GetProjectByIdRequest(project_id = item.project_id))
+    def add_item(self, item: Task) -> Task:
+        project = get_by_id(Task.project_id)
         invalid_users = [user for user in item.owners_list if user not in project.users]
         if invalid_users:
             raise HTTPException(status_code=400, detail=f"Invalid users: {', '.join(invalid_users)}")
 
-        task_list = self.get_all(item.project_id)
-
-        task_list.append(item)
-        with open(self.get_task_path(item.project_id), "w", encoding="utf-8") as f:
-            json.dump([t.dict() for t in task_list], f, indent=4)
+        tasks = self.get_all()
+        tasks.append(item)
+        with open(task_json_path, "w", encoding="utf-8") as f:
+            json.dump([t.dict() for t in tasks], f, indent=4)
         return item
+
+
     
-    def delete_item(self, task_to_delete: DeleteTaskRequest) -> bool:
-        task_list = self.get_all(task_to_delete.project_id)
-        new_list = [t for t in task_list if t.id != task_to_delete.task_id]
-        if len(new_list) == len(task_list):
-            return False
-        with open(self.get_task_path(task_to_delete.project_id), "w", encoding="utf-8") as f:
-            json.dump([t.dict() for t in new_list], f, indent=4)
+    def delete_item(self, task_id_to_delete: UUID) -> bool:
+        tasks = self.get_all()
+        after_delete_tasks = [t for t in tasks if t.id != task_id_to_delete]
+        if len(tasks) != len(after_delete_tasks): return False
+        with open(task_json_path, "w", encoding="utf-8") as f:
+            json.dump([t.dict() for t in after_delete_tasks], f, indent=4)
         return True
     
     def update_item(self, updated_task: UpdateTaskRequest) -> Task:
