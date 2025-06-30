@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from uuid import UUID, uuid4
-from typing import List
+from typing import List, Optional
 from fastapi import HTTPException
 from models.requestes.project_requests import CreateProjectRequest, DeleteProjectRequest, GetProjectByIdRequest, UpdateProjectRequest
 from models.domain.types.project import Project
@@ -17,35 +17,22 @@ class ProjectRepository(BaseRepositoryInterface[Project]):
             data = json.load(project_json)
         return [Project(**item) for item in data]
     
-    def add_item(self, project: CreateProjectRequest) -> Project:
+    def add_item(self, project: Project) -> Optional[Project]:
         projects_list = self.get_all()
 
         if any(p.name == project.name for p in projects_list):
             raise HTTPException(status_code=400, detail="Project name already exists")
 
-        
-        project_to_add = Project(
-            name = project.name_project,
-            users = project.users_list
-        )
-
-        projects_list.append(project_to_add)
+        projects_list.append(project)
 
         with open(project_json_path, 'w', encoding='utf-8') as file:
             json.dump([p.dict() for p in projects_list], file, indent=4)
 
-        task_filename = f'tasks_{project.name.lower().replace(" ", "_")}.json'
-        task_folder = Path("data")
-        task_path = task_folder / task_filename
-
-        with open(task_path, 'w', encoding='utf-8') as task_file:
-            json.dump([], task_file, indent=4)
-
         return project
     
-    def delete_item(self, project_to_delete: DeleteProjectRequest) -> bool:
+    def delete_item(self, project_id: UUID) -> bool:
         projects = self.get_all()
-        projects_after_delete = [p for p in projects if p.id != project_to_delete.project_id]
+        projects_after_delete = [p for p in projects if p.id != project_id]
         if len(projects) == len(projects_after_delete):
             return False
         with open(project_json_path, "w", encoding="utf-8") as f:
