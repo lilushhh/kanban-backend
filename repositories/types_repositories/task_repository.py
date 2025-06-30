@@ -56,6 +56,6 @@ class TaskRepository(BaseRepositoryInterface[Task]):
         raise HTTPException(status_code=404, detail="Task not found")
 
     
-    def get_by_id(self, project_id: UUID, task_id: UUID) -> Optional[Task]:
-        task_list = self.get_all(project_id)
-        return next((t for t in task_list if t.id == task_id), None)
+    def get_by_id(self, task_to_get: GetTaskByIdRequest) -> Optional[Task]:
+        task_list = self.get_all(task_to_get.project_id)
+        return next((t for t in task_list if t.id == task_to_get.task_id), None)
