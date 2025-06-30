@@ -13,7 +13,6 @@ class CreateTaskRequest(BaseModel):
     status_task: StatusEnum
 
 class DeleteTaskRequest(BaseModel):
-    project_id: UUID
     task_id: UUID
 
 class UpdateTaskRequest(BaseModel):
@@ -24,6 +23,5 @@ class UpdateTaskRequest(BaseModel):
     status_task: StatusEnum
 
 class GetTaskByIdRequest(BaseModel):
-    project_id: UUID
     task_id: UUID
     

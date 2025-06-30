@@ -18,7 +18,7 @@ class TaskRepository(BaseRepositoryInterface[Task]):
         return [Task(**item) for item in data]
 
     
-    def add_item(self, item: Task) -> Task:
+    def add_item(self, item: Task) -> Optional[Task]:
         project = get_by_id(item.project_id)
         invalid_users = [user for user in item.owners_list if user not in project.users]
         if invalid_users:
@@ -40,7 +40,7 @@ class TaskRepository(BaseRepositoryInterface[Task]):
         return True
     
 
-    def update_item(self, updated_task: Task) -> Task:
+    def update_item(self, updated_task: Task) -> Optional[Task]:
         tasks = self.get_all()
         for i, t in enumerate(tasks):
             if t.id == updated_task.id:
