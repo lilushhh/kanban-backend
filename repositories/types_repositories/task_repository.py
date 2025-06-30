@@ -1,5 +1,6 @@
 import json
 from uuid import UUID, uuid4
+from pathlib import Path
 from fastapi import HTTPException
 from typing import List, Optional
 from models.domain.types.task import Task
@@ -9,14 +10,16 @@ from helpers.utils import get_task_path
 from repositories.types_repositories.project_repository import get_by_id
 from repositories.base_repository import BaseRepositoryInterface
 
+task_json_path = Path("data/tasksProjects.json")
+
 class TaskRepository(BaseRepositoryInterface[Task]):
     def get_all(self, tasks_get: TasksGetRequest) -> List[Task]:
-        path = get_task_path(tasks_get.project_id)
-        if not path.exists():
+        if not task_json_path.exists():
             return []
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return [Task(**t) for t in data]
+        with open(task_json_path, "r", encoding="utf-8") as tasks_json:
+            data = json.load(tasks_json)
+        return [Task(**item) for item in data]
+
     
     def add_item(self, item: CreateTaskRequest) -> Task:
         project = get_by_id(GetProjectByIdRequest(project_id = item.project_id))
