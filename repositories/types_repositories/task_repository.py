@@ -19,10 +19,10 @@ class TaskRepository(BaseRepositoryInterface[Task]):
 
     
     def add_item(self, item: Task) -> Task:
-        project = get_by_id(Task.project_id)
+        project = get_by_id(item.project_id)
         invalid_users = [user for user in item.owners_list if user not in project.users]
         if invalid_users:
-            raise HTTPException(status_code=400, detail=f"Invalid users: {', '.join(invalid_users)}")
+            return None
 
         tasks = self.get_all()
         tasks.append(item)
@@ -50,7 +50,7 @@ class TaskRepository(BaseRepositoryInterface[Task]):
                 with open(task_json_path, "w", "utf-8") as f:
                     json.dump([t.dict() for t in tasks], f, indent=4)
                 return tasks[i]
-        return HTTPException(status_code=404, detail="Task not found")
+        return None
 
     
     def get_by_id(self, task_id: UUID) -> Optional[Task]:
