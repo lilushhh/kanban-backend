@@ -19,36 +19,31 @@ class ProjectRepository(BaseRepositoryInterface[Project]):
     
     def add_item(self, project: Project) -> Optional[Project]:
         projects_list = self.get_all()
-
         if any(p.name == project.name for p in projects_list):
             raise HTTPException(status_code=400, detail="Project name already exists")
-
         projects_list.append(project)
-
         with open(project_json_path, 'w', encoding='utf-8') as file:
             json.dump([p.dict() for p in projects_list], file, indent=4)
-
         return project
     
     def delete_item(self, project_id: UUID) -> bool:
         projects = self.get_all()
         projects_after_delete = [p for p in projects if p.id != project_id]
-        if len(projects) == len(projects_after_delete):
-            return False
+        if len(projects) == len(projects_after_delete): return False
         with open(project_json_path, "w", encoding="utf-8") as f:
             json.dump([p.dict() for p in projects_after_delete], f, indent=4)
         return True
     
-    def update_item(self, updated_project: UpdateProjectRequest) -> Project:
+    def update_item(self, updated_project: Project) -> Optional[Project]:
         projects = self.get_all()
         for i, p in enumerate(projects):
             if p.id == updated_project.project_id:
-                projects[i] = updated_project.copy(update={"id": updated_project.project_id})
+                projects[i] = updated_project.copy(update={"id": updated_project.id})
                 with open(project_json_path, "w", encoding="utf-8") as f:
                     json.dump([pr.dict() for pr in projects], f, indent=4)
                 return projects[i]
-        raise HTTPException(status_code=404, detail="Project not found")
+        return None
     
-    def get_by_id(self, project_to_get: GetProjectByIdRequest):
+    def get_by_id(self, project_id: UUID):
         projects = self.get_all()
-        return next((project for project in projects if project.id == project_to_get.project_id), None)
+        return next((project for project in projects if project.id == project_id), None)
