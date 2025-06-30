@@ -3,9 +3,6 @@ from pydantic import BaseModel
 from typing import List
 from models.enums.status_enum import StatusEnum
 
-class TasksGetRequest(BaseModel):
-    project_id: UUID
-
 class CreateTaskRequest(BaseModel):
     project_id: UUID
     task_title: str
