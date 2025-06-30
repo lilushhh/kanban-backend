@@ -34,7 +34,6 @@ class TaskRepository(BaseRepositoryInterface[Task]):
         return item
 
 
-    
     def delete_item(self, task_id_to_delete: UUID) -> bool:
         tasks = self.get_all()
         after_delete_tasks = [t for t in tasks if t.id != task_id_to_delete]
@@ -43,20 +42,18 @@ class TaskRepository(BaseRepositoryInterface[Task]):
             json.dump([t.dict() for t in after_delete_tasks], f, indent=4)
         return True
     
-    def update_item(self, updated_task: UpdateTaskRequest) -> Task:
-        task_list = self.get_all(updated_task.project_id)
-        for i, task in enumerate(task_list):
-            if task.id == updated_task.task_id:
-                updated_task_obj = task.copy(update={
-                    "text": updated_task.task_title,
-                    "owners": updated_task.owners_list,
-                    "status": updated_task.status_task
-                })
-                task_list[i] = updated_task_obj
-                with open(self.get_task_path(updated_task.project_id), "w", encoding="utf-8") as f:
-                    json.dump([t.dict() for t in task_list], f, indent=4)
-                return updated_task_obj
-        raise HTTPException(status_code=404, detail="Task not found")
+
+    def update_item(self, updated_task: Task) -> Task:
+        tasks = self.get_all()
+        for i, t in enumerate(tasks):
+            if t.id == updated_task.id:
+                tasks[i] = updated_task.copy(update={
+                "id": t.id,
+                "project_id": t.project_id})
+                with open(task_json_path, "w", "utf-8") as f:
+                    json.dump([t.dict() for t in tasks], f, indent=4)
+                return tasks[i]
+        return HTTPException(status_code=404, detail="Task not found")
 
     
     def get_by_id(self, task_to_get: GetTaskByIdRequest) -> Optional[Task]:
