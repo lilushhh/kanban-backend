@@ -8,6 +8,7 @@ class Task(BaseObject):
     text: str
     owners: Optional[str] = List[str]
     status: StatusEnum
+    project_id: UUID
     
     def __init__(self, **data):
         data["id"] = uuid4()
