@@ -4,9 +4,6 @@ from pathlib import Path
 from fastapi import HTTPException
 from typing import List, Optional
 from models.domain.types.task import Task
-from models.requestes.task_requests import TasksGetRequest, CreateTaskRequest, DeleteTaskRequest, UpdateTaskRequest, GetTaskByIdRequest
-from models.requestes.project_requests import GetProjectByIdRequest
-from helpers.utils import get_task_path
 from repositories.types_repositories.project_repository import get_by_id
 from repositories.base_repository import BaseRepositoryInterface
 
