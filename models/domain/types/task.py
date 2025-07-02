@@ -6,10 +6,11 @@ from models.enums.object_type import ObjectType
 
 class Task(BaseObject):
     text: str
-    owners: Optional[str] = List[str]
+    owners: List[str] = []
     status: StatusEnum
     project_id: UUID
     
     def __init__(self, **data):
-        data["id"] = uuid4()
+        data["id"] = data.get("id", uuid4())
         data["type"] = ObjectType.TASK
+        super().__init__(**data)

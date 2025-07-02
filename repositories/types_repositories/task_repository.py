@@ -4,10 +4,12 @@ from pathlib import Path
 from fastapi import HTTPException
 from typing import List, Optional
 from models.domain.types.task import Task
-from repositories.types_repositories.project_repository import get_by_id
+from repositories.types_repositories.project_repository import ProjectRepository
 from repositories.base_repository import BaseRepositoryInterface
+from helpers.utils import to_serializable
 
 task_json_path = Path("data/tasksProjects.json")
+project_repo = ProjectRepository()
 
 class TaskRepository(BaseRepositoryInterface[Task]):
     def get_all(self) -> List[Task]:
@@ -19,15 +21,15 @@ class TaskRepository(BaseRepositoryInterface[Task]):
 
     
     def add_item(self, item: Task) -> Optional[Task]:
-        project = get_by_id(item.project_id)
-        invalid_users = [user for user in item.owners_list if user not in project.users]
+        project = project_repo.get_by_id(item.project_id)
+        invalid_users = [user for user in item.owners if user not in project.users]
         if invalid_users:
             return None
 
         tasks = self.get_all()
         tasks.append(item)
         with open(task_json_path, "w", encoding="utf-8") as f:
-            json.dump([t.dict() for t in tasks], f, indent=4)
+            json.dump([t.dict() for t in tasks], f, indent=4, default=to_serializable)
         return item
 
 
@@ -36,7 +38,7 @@ class TaskRepository(BaseRepositoryInterface[Task]):
         after_delete_tasks = [t for t in tasks if t.id != task_id_to_delete]
         if len(tasks) == len(after_delete_tasks): return False
         with open(task_json_path, "w", encoding="utf-8") as f:
-            json.dump([t.dict() for t in after_delete_tasks], f, indent=4)
+            json.dump([t.dict() for t in after_delete_tasks], f, indent=4, default=to_serializable)
         return True
     
 
@@ -48,7 +50,7 @@ class TaskRepository(BaseRepositoryInterface[Task]):
                 "id": t.id,
                 "project_id": t.project_id})
                 with open(task_json_path, "w", encoding= "utf-8") as f:
-                    json.dump([t.dict() for t in tasks], f, indent=4)
+                    json.dump([t.dict() for t in tasks], f, indent=4, default=to_serializable)
                 return tasks[i]
         return None
 

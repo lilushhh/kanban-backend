@@ -8,5 +8,6 @@ class Project(BaseObject):
     users: List[str]
 
     def __init__(self, **data):
-        data["id"] = uuid4()
+        data["id"] = data.get("id", uuid4())
         data["type"] = ObjectType.PROJECT
+        super().__init__(**data)

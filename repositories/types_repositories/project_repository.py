@@ -3,11 +3,13 @@ from pathlib import Path
 from uuid import UUID, uuid4
 from typing import List, Optional
 from fastapi import HTTPException
-from models.requestes.project_requests import CreateProjectRequest, DeleteProjectRequest, GetProjectByIdRequest, UpdateProjectRequest
 from models.domain.types.project import Project
+
 from repositories.base_repository import BaseRepositoryInterface
+from helpers.utils import to_serializable
 
 project_json_path = Path("data/projects.json")
+
 
 class ProjectRepository(BaseRepositoryInterface[Project]):
     def get_all(self) -> List[Project]:
@@ -23,7 +25,7 @@ class ProjectRepository(BaseRepositoryInterface[Project]):
             raise HTTPException(status_code=400, detail="Project name already exists")
         projects_list.append(project)
         with open(project_json_path, 'w', encoding='utf-8') as file:
-            json.dump([p.dict() for p in projects_list], file, indent=4)
+            json.dump([p.dict() for p in projects_list], file, indent=4, default=to_serializable)
         return project
     
     def delete_item(self, project_id: UUID) -> bool:
@@ -31,7 +33,7 @@ class ProjectRepository(BaseRepositoryInterface[Project]):
         projects_after_delete = [p for p in projects if p.id != project_id]
         if len(projects) == len(projects_after_delete): return False
         with open(project_json_path, "w", encoding="utf-8") as f:
-            json.dump([p.dict() for p in projects_after_delete], f, indent=4)
+            json.dump([p.dict() for p in projects_after_delete], f, indent=4, default=to_serializable)
         return True
     
     def update_item(self, updated_project: Project) -> Optional[Project]:
@@ -40,7 +42,7 @@ class ProjectRepository(BaseRepositoryInterface[Project]):
             if p.id == updated_project.id:
                 projects[i] = updated_project.copy(update={"id": updated_project.id})
                 with open(project_json_path, "w", encoding="utf-8") as f:
-                    json.dump([pr.dict() for pr in projects], f, indent=4)
+                    json.dump([pr.dict() for pr in projects], f, indent=4, default=to_serializable)
                 return projects[i]
         return None
     

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from abc import ABC
-from typing import Field
+from pydantic import Field
 from models.enums.object_type import ObjectType
 from uuid import UUID, uuid4
 
