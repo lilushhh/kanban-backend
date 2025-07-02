@@ -34,7 +34,7 @@ class TaskRepository(BaseRepositoryInterface[Task]):
     def delete_item(self, task_id_to_delete: UUID) -> bool:
         tasks = self.get_all()
         after_delete_tasks = [t for t in tasks if t.id != task_id_to_delete]
-        if len(tasks) != len(after_delete_tasks): return False
+        if len(tasks) == len(after_delete_tasks): return False
         with open(task_json_path, "w", encoding="utf-8") as f:
             json.dump([t.dict() for t in after_delete_tasks], f, indent=4)
         return True
@@ -47,7 +47,7 @@ class TaskRepository(BaseRepositoryInterface[Task]):
                 tasks[i] = updated_task.copy(update={
                 "id": t.id,
                 "project_id": t.project_id})
-                with open(task_json_path, "w", "utf-8") as f:
+                with open(task_json_path, "w", encoding= "utf-8") as f:
                     json.dump([t.dict() for t in tasks], f, indent=4)
                 return tasks[i]
         return None

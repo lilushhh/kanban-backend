@@ -14,9 +14,10 @@ def read_projects():
     return get_all()
 
 @router.get("/{project_id}")
-def read_project_by_id(project: GetProjectByIdRequest):
-    returned_project = get_by_id(project.project_id)
-    if returned_project: return returned_project
+def read_project_by_id(project_id: UUID):
+    returned_project = get_by_id(project_id)
+    if returned_project:
+        return returned_project
     raise HTTPException(status_code=404, detail="cannot find project")
 
 @router.post("/")

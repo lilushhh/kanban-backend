@@ -37,13 +37,13 @@ class ProjectRepository(BaseRepositoryInterface[Project]):
     def update_item(self, updated_project: Project) -> Optional[Project]:
         projects = self.get_all()
         for i, p in enumerate(projects):
-            if p.id == updated_project.project_id:
+            if p.id == updated_project.id:
                 projects[i] = updated_project.copy(update={"id": updated_project.id})
                 with open(project_json_path, "w", encoding="utf-8") as f:
                     json.dump([pr.dict() for pr in projects], f, indent=4)
                 return projects[i]
         return None
     
-    def get_by_id(self, project_id: UUID):
+    def get_by_id(self, project_id: UUID) -> Optional[Project]:
         projects = self.get_all()
         return next((project for project in projects if project.id == project_id), None)

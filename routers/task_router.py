@@ -6,15 +6,18 @@ from repositories.types_repositories.task_repository import (
 )
 from models.requestes.task_requests import TasksGetRequest, DeleteTaskRequest,CreateTaskRequest,UpdateTaskRequest,GetTaskByIdRequest
 
-router = APIRouter(prefix="/projects/{project_id}/tasks", tags=["tasks"])
+router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 @router.get("/")
 def read_tasks():
     return get_all()
 
 @router.get("/{task_id}")
-def read_task_by_id(task: GetTaskByIdRequest):
-    return get_by_id(task.project_id, task.task_id)
+def read_task_by_id(task_id: UUID):
+    task = get_by_id(task_id)
+    if task:
+        return task
+    raise HTTPException(status_code=404, detail="task not found")
 
 @router.post("/")
 def add_task(task: CreateTaskRequest):
