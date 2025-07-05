@@ -8,7 +8,7 @@ from repositories.types_repositories.project_repository import ProjectRepository
 from repositories.base_repository import BaseRepositoryInterface
 from helpers.utils import to_serializable
 
-task_json_path = Path("data/tasksProjects.json")
+task_json_path = Path("data/tasks.json")
 project_repo = ProjectRepository()
 
 class TaskRepository(BaseRepositoryInterface[Task]):
