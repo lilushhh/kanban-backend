@@ -47,5 +47,3 @@ class ProjectRepositoryDB(BaseRepositoryInterface[Project]):
         db_project.users = item.users
         await self.db.commit()
         return item
-    
-    
