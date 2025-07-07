@@ -41,14 +41,14 @@ class TaskRepositoryDB(BaseRepositoryInterface[Task]):
         await self.db.commit()
         return True
     
-    async def update_item(self, item_id: UUID, item: Task) -> Optional[Task]:
-        task = await self.db.get(TaskORM, item_id)
+    async def update_item(self, item: Task) -> Optional[Task]:
+        task = await self.db.get(TaskORM, item.id)
         if not task:
             return None
-        task.id = item_id
         task.type = item.type
         task.text = item.text
         task.status = item.status
         task.owners = item.owners
+        task.project_id = item.project_id
         await self.db.commit()
         return item

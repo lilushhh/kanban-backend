@@ -1,5 +1,5 @@
-from enum import Enum
+from enum import Enum as PyEnum
 
-class ObjectType(str, Enum):
+class ObjectType(str, PyEnum):
     PROJECT = "project"
     TASK = "task"

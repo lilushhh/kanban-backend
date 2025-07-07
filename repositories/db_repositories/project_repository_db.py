@@ -41,7 +41,6 @@ class ProjectRepositoryDB(BaseRepositoryInterface[Project]):
         db_project = await self.db.get(ProjectORM, item_id)
         if not db_project:
             return None
-        db_project.id= item_id
         db_project.type = item.type
         db_project.name = item.name
         db_project.users = item.users

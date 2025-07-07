@@ -1,11 +1,11 @@
 from uuid import UUID
 from fastapi import APIRouter, HTTPException
 from models.domain.types.project import Project
-from repositories.types_repositories.project_repository import ProjectRepository
+from repositories.db_repositories.project_repository_db import ProjectRepositoryDB
 from models.requestes.project_requests import CreateProjectRequest, UpdateProjectRequest
 
 router = APIRouter(prefix="/projects", tags=["projects"])
-project_repo = ProjectRepository()
+project_repo = ProjectRepositoryDB()
 
 @router.get("/")
 def read_projects():

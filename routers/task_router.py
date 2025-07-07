@@ -1,14 +1,14 @@
 from uuid import UUID
 from fastapi import APIRouter, HTTPException
 from models.domain.types.task import Task
-from repositories.types_repositories.task_repository import TaskRepository
+from repositories.db_repositories.task_repository_db import TaskRepositoryDB
 from models.requestes.task_requests import (
     CreateTaskRequest,
     UpdateTaskRequest
 )
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
-task_repo = TaskRepository()
+task_repo = TaskRepositoryDB()
 
 @router.get("/")
 def read_tasks():
