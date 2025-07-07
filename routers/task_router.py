@@ -1,5 +1,7 @@
 from uuid import UUID
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from db_config import get_db
 from models.domain.types.task import Task
 from repositories.db_repositories.task_repository_db import TaskRepositoryDB
 from models.requestes.task_requests import (
@@ -9,6 +11,9 @@ from models.requestes.task_requests import (
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 task_repo = TaskRepositoryDB()
+
+def get_task_repo(db: AsyncSession = Depends(get_db)) -> TaskRepositoryDB:
+    return TaskRepositoryDB(db)
 
 @router.get("/")
 def read_tasks():
