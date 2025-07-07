@@ -7,24 +7,23 @@ from repositories.db_repositories.project_repository_db import ProjectRepository
 from models.requestes.project_requests import CreateProjectRequest, UpdateProjectRequest
 
 router = APIRouter(prefix="/projects", tags=["projects"])
-project_repo = ProjectRepositoryDB()
 
 def get_project_repo(db: AsyncSession = Depends(get_db)) -> ProjectRepositoryDB:
     return ProjectRepositoryDB(db)
 
 @router.get("/")
-def read_projects():
+async def read_projects(project_repo: ProjectRepositoryDB = Depends(get_project_repo)):
     return project_repo.get_all()
 
 @router.get("/{project_id}")
-def read_project_by_id(project_id: UUID):
+def read_project_by_id(project_id: UUID, project_repo: ProjectRepositoryDB = Depends(get_project_repo)):
     returned_project = project_repo.get_by_id(project_id)
     if returned_project:
         return returned_project
     raise HTTPException(status_code=404, detail="cannot find project")
 
 @router.post("/")
-def create_project(project: CreateProjectRequest):
+def create_project(project: CreateProjectRequest, project_repo: ProjectRepositoryDB = Depends(get_project_repo)):
     new_project = Project(
         name=project.name_project,
         users=project.users_list
@@ -35,14 +34,14 @@ def create_project(project: CreateProjectRequest):
     raise HTTPException(status_code=400, detail="cannot create project")
 
 @router.delete("/{project_id}")
-def delete_project(project_id: UUID):
+def delete_project(project_id: UUID, project_repo: ProjectRepositoryDB = Depends(get_project_repo)):
     project_to_delete = project_repo.delete_item(project_id)
     if not project_to_delete:
         raise HTTPException(status_code=404, detail="cannot find project to delete")
     return {"message": "Project deleted successfully"}
 
 @router.put("/{project_id}")
-def update_project(project_id: UUID, update: UpdateProjectRequest):
+def update_project(project_id: UUID, update: UpdateProjectRequest, project_repo: ProjectRepositoryDB = Depends(get_project_repo)):
     project_to_update = Project(
         id=project_id,
         name=update.name_project,
