@@ -1,11 +1,16 @@
 from uuid import UUID
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from db_config import get_db
 from models.domain.types.project import Project
 from repositories.db_repositories.project_repository_db import ProjectRepositoryDB
 from models.requestes.project_requests import CreateProjectRequest, UpdateProjectRequest
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 project_repo = ProjectRepositoryDB()
+
+def get_project_repo(db: AsyncSession = Depends(get_db)) -> ProjectRepositoryDB:
+    return ProjectRepositoryDB(db)
 
 @router.get("/")
 def read_projects():
