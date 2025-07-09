@@ -47,3 +47,25 @@ def test_get_project_by_invalid_id():
     data = response.json()
     assert data["detail"] == "cannot find project"
 
+@pytest.mark.integration
+def test_create_project_success():
+    payload = {
+        "name_project": "Kanban Pytest Project",
+        "users_list": ["user1", "user2"]
+    }
+
+    response = client.post("/projects/", json=payload)
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["name"] == "Kanban Pytest Project"
+    assert data["users"] == ["user1", "user2"]
+    assert "id" in data 
+
+@pytest.mark.integration
+def test_create_project_missing_fields():
+    payload = {
+        "users_list": ["user1"]
+    }
+    response = client.post("/projects/", json=payload)
+    assert response.status_code == 422
