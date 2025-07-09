@@ -98,3 +98,42 @@ def test_delete_non_existing_project():
     response = client.delete(f"/projects/{fake_id}")
     assert response.status_code == 404
     assert response.json()["detail"] == "cannot find project to delete"
+
+@pytest.mark.integration
+def test_update_existing_project():
+    create_payload = {
+        "name_project": "Project Before Update",
+        "users_list": ["user1"]
+    }
+    create_response = client.post("/projects/", json=create_payload)
+    assert create_response.status_code == 200
+
+    created_project = create_response.json()
+    project_id = created_project["id"]
+
+    update_payload = {
+        "project_id": project_id,
+        "name_project": "Updated Project",
+        "users_list": ["user1", "user2"]
+    }
+    update_response = client.put(f"/projects/{project_id}", json=update_payload)
+    assert update_response.status_code == 200
+
+    updated_data = update_response.json()
+    assert updated_data["name"] == "Updated Project"
+    assert updated_data["users"] == ["user1", "user2"]
+    assert updated_data["id"] == project_id  
+
+@pytest.mark.integration
+def test_update_non_existing_project():
+    fake_id = str(uuid4())
+
+    update_payload = {
+        "project_id": fake_id,
+        "name_project": "Should Not Exist",
+        "users_list": ["ghost"]
+    }
+
+    response = client.put(f"/projects/{fake_id}", json=update_payload)
+    assert response.status_code == 404
+    assert response.json()["detail"] == "project not found"
