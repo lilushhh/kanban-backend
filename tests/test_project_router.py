@@ -69,3 +69,32 @@ def test_create_project_missing_fields():
     }
     response = client.post("/projects/", json=payload)
     assert response.status_code == 422
+
+@pytest.mark.integration
+def test_delete_existing_project():
+    payload = {
+        "name_project": "Project To Delete",
+        "users_list": ["user1"]
+    }
+
+    create_response = client.post("/projects/", json=payload)
+    assert create_response.status_code == 200
+
+    created_project = create_response.json()
+    project_id = created_project["id"]
+
+    delete_response = client.delete(f"/projects/{project_id}")
+    assert delete_response.status_code == 200
+    data = delete_response.json()
+    assert data["message"] == "Project deleted successfully"
+
+    get_response = client.get(f"/projects/{project_id}")
+    assert get_response.status_code == 404
+
+@pytest.mark.integration
+def test_delete_non_existing_project():
+    fake_id = str(uuid4())
+
+    response = client.delete(f"/projects/{fake_id}")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "cannot find project to delete"
