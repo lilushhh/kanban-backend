@@ -18,11 +18,11 @@ class TaskRepositoryDB(BaseRepositoryInterface[Task]):
         return [task_to_pydantic(t) for t in result.scalars().all()]
     
     async def get_by_id(self, item_id: UUID) -> Optional[Task]:
-        task = await self.db.get(TaskORM, item_id)
+        task = await self.db.get(TaskORM, str(item_id))
         return task_to_pydantic(task) if task else None
     
     async def add_item(self, item: Task) -> Optional[Task]:
-        project = await self.db.get(ProjectORM, item.project_id)
+        project = await self.db.get(ProjectORM, str(item.project_id))
         if not project:
             return None
         invalid_users = [u for u in item.owners if u not in project.users]
@@ -34,7 +34,7 @@ class TaskRepositoryDB(BaseRepositoryInterface[Task]):
         return item
     
     async def delete_item(self, item_id: UUID) -> bool:
-        task = await self.db.get(TaskORM, item_id)
+        task = await self.db.get(TaskORM, str(item_id))
         if not task:
             return False
         await self.db.delete(task)
@@ -42,7 +42,7 @@ class TaskRepositoryDB(BaseRepositoryInterface[Task]):
         return True
     
     async def update_item(self, item: Task) -> Optional[Task]:
-        task = await self.db.get(TaskORM, item.id)
+        task = await self.db.get(TaskORM, str(item.id))
         if not task:
             return None
         task.type = item.type

@@ -7,8 +7,11 @@ from models.orm.orm_types.task_orm import TaskORM
 
 DATABASE_URL = "sqlite+aiosqlite:///./kanban.db"
 
-engine = create_async_engine(DATABASE_URL, echo = True)
-
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=True,
+    connect_args={"check_same_thread": False}
+)
 AsyncSessionLocal = sessionmaker(
     bind=engine,
     class_=AsyncSession,

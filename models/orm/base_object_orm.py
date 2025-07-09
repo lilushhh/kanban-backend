@@ -5,5 +5,5 @@ from models.enums.object_type import ObjectType
 
 class BaseObjectORM(Base):
     __abstract__ = True
-    id = Column(UUID, primary_key=True, default=uuid4)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid4()))
     type = Column(SqlEnum(ObjectType), nullable=False)

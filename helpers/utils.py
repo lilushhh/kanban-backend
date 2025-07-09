@@ -23,7 +23,7 @@ def project_to_pydantic(project_orm: ProjectORM) -> Project:
 
 def project_to_orm(project_pydantic: Project) -> ProjectORM:
     return ProjectORM(
-        id = project_pydantic.id,
+        id = str(project_pydantic.id),
         type = project_pydantic.type,
         name = project_pydantic.name,
         users = project_pydantic.users
@@ -32,6 +32,7 @@ def project_to_orm(project_pydantic: Project) -> ProjectORM:
 def task_to_pydantic(task_orm: TaskORM) -> Task:
     return Task(
         id = task_orm.id,
+        text = task_orm.text,
         type = task_orm.type,
         owners = task_orm.owners,
         status = task_orm.status,
@@ -40,7 +41,8 @@ def task_to_pydantic(task_orm: TaskORM) -> Task:
 
 def task_to_orm(task_pydantic: Task) -> TaskORM:
     return TaskORM(
-        id = task_pydantic.id,
+        id = str(task_pydantic.id),
+        text = task_pydantic.text,
         type = task_pydantic.type,
         owners = task_pydantic.owners,
         status = task_pydantic.status,

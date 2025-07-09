@@ -17,7 +17,7 @@ class ProjectRepositoryDB(BaseRepositoryInterface[Project]):
         return [project_to_pydantic(p) for p in result.scalars().all()]
     
     async def get_by_id(self, item_id: UUID) -> Optional[Project]:
-        project = await self.db.get(ProjectORM, item_id)
+        project = await self.db.get(ProjectORM, str(item_id))
         return project_to_pydantic(project) if project else None
     
     async def add_item(self, item: Project) -> Optional[Project]:
@@ -30,7 +30,7 @@ class ProjectRepositoryDB(BaseRepositoryInterface[Project]):
         return item
     
     async def delete_item(self, item_id: UUID) -> bool:
-        project = await self.db.get(ProjectORM, item_id)
+        project = await self.db.get(ProjectORM, str(item_id))
         if not project:
             return False
         await self.db.delete(project)
@@ -38,7 +38,7 @@ class ProjectRepositoryDB(BaseRepositoryInterface[Project]):
         return True
     
     async def update_item(self, item_id: UUID, item: Project) -> Optional[Project]:
-        db_project = await self.db.get(ProjectORM, item_id)
+        db_project = await self.db.get(ProjectORM, str(item_id))
         if not db_project:
             return None
         db_project.type = item.type
