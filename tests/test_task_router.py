@@ -89,3 +89,10 @@ def test_get_task_by_valid_id():
     assert data["text"] == "Test Task For Get"
     assert data["owners"] == ["user1"]
     assert data["status"] == "todo"
+
+@pytest.mark.integration
+def test_get_task_by_invalid_id():
+    fake_id = str(uuid4())
+    res = client.get(f"/tasks/{fake_id}")
+    assert res.status_code == 404
+    assert res.json()["detail"] == "task not found"
