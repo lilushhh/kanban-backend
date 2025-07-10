@@ -120,3 +120,21 @@ def test_read_tasks_list():
         assert "status" in task
         assert "project_id" in task
 
+@pytest.mark.integration
+def test_update_task_success():
+    project_id = create_project()
+    task_id = create_task(project_id)
+
+    update_payload = {
+        "project_id": project_id,
+        "task_id": task_id,
+        "task_title": "After Update",
+        "owners_list": ["user2"],
+        "status_task": "done"
+    }
+    res = client.put(f"/tasks/{task_id}", json=update_payload)
+    assert res.status_code == 200
+    updated = res.json()
+    assert updated["text"] == "After Update"
+    assert updated["owners"] == ["user2"]
+    assert updated["status"] == "done"
