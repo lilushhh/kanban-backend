@@ -167,3 +167,17 @@ def test_update_task_invalid_cases():
     assert res_invalid_owners.status_code == 400
     assert res_invalid_owners.json()["detail"] == "cannot update task"
     
+@pytest.mark.integration
+def test_delete_task_success():
+    project_id = create_project()
+    task_id = create_task(project_id)
+    res = client.delete(f"/tasks/{task_id}")
+    assert res.status_code == 200
+    assert res.json()["message"] == "Task deleted successfully"
+
+@pytest.mark.integration
+def test_delete_task_invalid_id():
+    fake_id = str(uuid4())
+    res = client.delete(f"/tasks/{fake_id}")
+    assert res.status_code == 404
+    assert res.json()["detail"] == "cannot find task to delete"
