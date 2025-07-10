@@ -16,6 +16,17 @@ def create_project():
     assert response.status_code == 200
     return response.json()["id"]
 
+def create_task(project_id):
+    payload = {
+        "project_id": project_id,
+        "task_title": "Test Task For Get",
+        "owners_list": ["user1"],
+        "status_task": "todo"
+    }
+    res = client.post("/tasks/", json=payload)
+    assert res.status_code == 200
+    return res.json()["id"]
+
 @pytest.mark.integration
 def test_create_task_success():
     project_id = create_project()
@@ -66,3 +77,15 @@ def test_create_task_invalis_cases():
     res_missing_fields = client.post("/tasks/", json=payload_missing_fields)
     assert res_missing_fields.status_code == 422
 
+@pytest.mark.integration
+def test_get_task_by_valid_id():
+    project_id = create_project()
+    task_id = create_task(project_id)
+
+    res = client.get(f"/tasks/{task_id}")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["id"] == task_id
+    assert data["text"] == "Test Task For Get"
+    assert data["owners"] == ["user1"]
+    assert data["status"] == "todo"
