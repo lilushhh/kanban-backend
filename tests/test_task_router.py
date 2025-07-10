@@ -14,3 +14,21 @@ def create_project():
     response = client.post("/projects/", json=payload)
     assert response.status_code == 200
     return response.json()["id"]
+
+@pytest.mark.integration
+def test_create_task_success():
+    project_id = create_project()
+    payload = {
+        "project_id": project_id,
+        "task_title": "Test Task 1",
+        "owners_list": ["user1"],
+        "status_task": "todo"
+    }
+    response = client.post("/tasks/", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["text"] == "Test Task 1"
+    assert data["owners"] == ["user1"]
+    assert data["status"] == "todo"
+    assert data["project_id"] == project_id
+    assert "id" in data
