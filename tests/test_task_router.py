@@ -96,3 +96,27 @@ def test_get_task_by_invalid_id():
     res = client.get(f"/tasks/{fake_id}")
     assert res.status_code == 404
     assert res.json()["detail"] == "task not found"
+
+@pytest.mark.integration
+def test_read_tasks_list():
+    project_id = create_project()
+    payload = {
+        "project_id": project_id,
+        "task_title": "Visible Task",
+        "owners_list": ["user1"],
+        "status_task": "todo"
+    }
+    client.post("/tasks/", json=payload)
+
+    res = client.get("/tasks/")
+    assert res.status_code == 200
+    data = res.json()
+    assert isinstance(data, list)
+    assert len(data) > 0
+    for task in data:
+        assert "id" in task
+        assert "text" in task
+        assert "owners" in task
+        assert "status" in task
+        assert "project_id" in task
+
