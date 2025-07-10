@@ -45,6 +45,15 @@ class TaskRepositoryDB(BaseRepositoryInterface[Task]):
         task = await self.db.get(TaskORM, str(item.id))
         if not task:
             return None
+        
+        project = await self.db.get(ProjectORM, str(item.project_id))
+        if not project:
+            return None
+
+        invalid_users = [u for u in item.owners if u not in project.users]
+        if invalid_users:
+            return None
+        
         task.type = item.type
         task.text = item.text
         task.status = item.status

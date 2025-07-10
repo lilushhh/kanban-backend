@@ -48,9 +48,13 @@ async def update_task(task_id: UUID, update: UpdateTaskRequest, task_repo: TaskR
         project_id=update.project_id
     )
     updated_task = await task_repo.update_item(task_to_update)
-    if updated_task:
-        return updated_task
-    raise HTTPException(status_code=404, detail="task not found")
+    if updated_task is None:
+        existing_task = await task_repo.get_by_id(task_id)
+        if existing_task is None:
+            raise HTTPException(status_code=404, detail="task not found")
+        else:
+            raise HTTPException(status_code=400, detail="cannot update task")
+    return updated_task
 
 @router.delete("/{task_id}")
 async def delete_task(task_id: UUID, task_repo: TaskRepositoryDB = Depends(get_task_repo)):

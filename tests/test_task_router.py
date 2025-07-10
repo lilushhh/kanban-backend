@@ -138,3 +138,32 @@ def test_update_task_success():
     assert updated["text"] == "After Update"
     assert updated["owners"] == ["user2"]
     assert updated["status"] == "done"
+
+@pytest.mark.integration
+def test_update_task_invalid_cases():
+    project_id = create_project()
+    task_id = create_task(project_id)
+
+    fake_task_id = str(uuid4())
+    payload_invalid_id = {
+        "project_id": project_id,
+        "task_id": fake_task_id,
+        "task_title": "Fake Task",
+        "owners_list": ["user1"],
+        "status_task": "done"
+    }
+    res_invalid_id = client.put(f"/tasks/{fake_task_id}", json=payload_invalid_id)
+    assert res_invalid_id.status_code == 404
+    assert res_invalid_id.json()["detail"] == "task not found"
+
+    payload_invalid_owners = {
+        "project_id": project_id,
+        "task_id": task_id,
+        "task_title": "Invalid Owners Update",
+        "owners_list": ["ghost_user"],
+        "status_task": "inProgress"
+    }
+    res_invalid_owners = client.put(f"/tasks/{task_id}", json=payload_invalid_owners)
+    assert res_invalid_owners.status_code == 400
+    assert res_invalid_owners.json()["detail"] == "cannot update task"
+    
