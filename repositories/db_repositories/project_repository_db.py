@@ -1,7 +1,8 @@
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import delete
 from models.orm.orm_types.project_orm import ProjectORM
+from models.orm.orm_types.task_orm import TaskORM
 from models.domain.types.project import Project
 from repositories.base_repository import BaseRepositoryInterface
 from helpers.utils import project_to_orm, project_to_pydantic
@@ -33,6 +34,10 @@ class ProjectRepositoryDB(BaseRepositoryInterface[Project]):
         project = await self.db.get(ProjectORM, str(item_id))
         if not project:
             return False
+
+        stmt = delete(TaskORM).where(TaskORM.project_id == item_id)
+        await self.db.execute(stmt)
+
         await self.db.delete(project)
         await self.db.commit()
         return True
